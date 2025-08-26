@@ -1,0 +1,57 @@
+using Microsoft.EntityFrameworkCore;
+using UserManagementApp.Data;
+using UserManagementApp.Services;
+using UserManagementApp.Middleware;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+
+// Add HttpContextAccessor for logging service
+builder.Services.AddHttpContextAccessor();
+
+// Add Entity Framework
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add logging service
+builder.Services.AddScoped<ILogService, LogService>();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+else
+{
+    app.UseDeveloperExceptionPage();
+}
+
+// Add global exception handling middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=User}/{action=Index}/{id?}");
+
+// Ensure database is created
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    context.Database.EnsureCreated();
+
+    // Create Logs directory for fallback logging
+    Directory.CreateDirectory("Logs");
+}
+
+app.Run();
