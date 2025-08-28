@@ -3,10 +3,6 @@
   "WorkspaceRootPath": "C:\\GitHub\\UserManagement\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{60637443-F110-40CF-90E8-E79657A4F8B3}|UserManagement.csproj|c:\\github\\usermanagement\\.gitignore.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{60637443-F110-40CF-90E8-E79657A4F8B3}|UserManagement.csproj|solutionrelative:.gitignore.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{60637443-F110-40CF-90E8-E79657A4F8B3}|UserManagement.csproj|c:\\github\\usermanagement\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}",
       "RelativeMoniker": "D:0:0:{60637443-F110-40CF-90E8-E79657A4F8B3}|UserManagement.csproj|solutionrelative:.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
     },
@@ -95,19 +91,6 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": ".gitignore.txt",
-              "DocumentMoniker": "C:\\GitHub\\UserManagement\\.gitignore.txt",
-              "RelativeDocumentMoniker": ".gitignore.txt",
-              "ToolTip": "C:\\GitHub\\UserManagement\\.gitignore.txt",
-              "RelativeToolTip": ".gitignore.txt",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
-              "WhenOpened": "2025-08-28T06:37:51.401Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
               "Title": ".gitignore",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\.gitignore",
               "RelativeDocumentMoniker": ".gitignore",
@@ -120,7 +103,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Views\\Log\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\Log\\Index.cshtml",
@@ -132,7 +115,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 6,
               "Title": "ExceptionHandlingMiddleware.cs",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Middleware\\ExceptionHandlingMiddleware.cs",
               "RelativeDocumentMoniker": "Middleware\\ExceptionHandlingMiddleware.cs",
@@ -144,7 +127,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 5,
               "Title": "UserController.cs",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Controllers\\UserController.cs",
               "RelativeDocumentMoniker": "Controllers\\UserController.cs",
@@ -156,7 +139,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -168,7 +151,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -180,7 +163,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "LogController.cs",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Controllers\\LogController.cs",
               "RelativeDocumentMoniker": "Controllers\\LogController.cs",
@@ -192,7 +175,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 8,
               "Title": "LogService.cs",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Services\\LogService.cs",
               "RelativeDocumentMoniker": "Services\\LogService.cs",
@@ -204,7 +187,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 9,
               "Title": "ILogService.cs",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Services\\ILogService.cs",
               "RelativeDocumentMoniker": "Services\\ILogService.cs",
@@ -216,7 +199,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 11,
               "Title": "Log.cs",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Models\\Log.cs",
               "RelativeDocumentMoniker": "Models\\Log.cs",
@@ -228,7 +211,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 7,
               "Title": "UserManagement.csproj",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\UserManagement.csproj",
               "RelativeDocumentMoniker": "UserManagement.csproj",
@@ -240,7 +223,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 13,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Views\\User\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\User\\Index.cshtml",
@@ -252,7 +235,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 10,
               "Title": "ApplicationDbContext.cs",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Data\\ApplicationDbContext.cs",
               "RelativeDocumentMoniker": "Data\\ApplicationDbContext.cs",
@@ -264,7 +247,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 17,
               "Title": "Create.cshtml",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Views\\User\\Create.cshtml",
               "RelativeDocumentMoniker": "Views\\User\\Create.cshtml",
@@ -276,7 +259,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 16,
               "Title": "Details.cshtml",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Views\\User\\Details.cshtml",
               "RelativeDocumentMoniker": "Views\\User\\Details.cshtml",
@@ -288,7 +271,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 15,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Views\\User\\Edit.cshtml",
               "RelativeDocumentMoniker": "Views\\User\\Edit.cshtml",
@@ -300,7 +283,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 14,
               "Title": "Delete.cshtml",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Views\\User\\Delete.cshtml",
               "RelativeDocumentMoniker": "Views\\User\\Delete.cshtml",
@@ -312,7 +295,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 12,
               "Title": "_Layout.cshtml",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Views\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
@@ -324,7 +307,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 18,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\GitHub\\UserManagement\\Models\\User.cs",
               "RelativeDocumentMoniker": "Models\\User.cs",
