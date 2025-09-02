@@ -1,0 +1,240 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
+using UserManagementApp.Data;
+using UserManagementApp.Models;
+using UserManagementApp.Services;
+using UserManagementApp.Exceptions;
+using Microsoft.AspNetCore.Authorization;
+
+namespace UserManagementApp.Controllers
+{
+    [Authorize] // Require authentication for all actions
+    public class UserController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly ILogService _logService;
+
+        public UserController(ApplicationDbContext context, ILogService logService)
+        {
+            _context = context;
+            _logService = logService;
+        }
+
+        // GET: User
+        public async Task<IActionResult> Index()
+        {
+            try
+            {
+                var users = await _context.Users
+                    .OrderByDescending(u => u.CreatedAt)
+                    .ToListAsync();
+
+                await _logService.LogInfoAsync($"Retrieved {users.Count} users for listing");
+                return View(users);
+            }
+            catch (Exception ex)
+            {
+                await _logService.LogErrorAsync(ex, "Error retrieving user list");
+                TempData["ErrorMessage"] = "An error occurred while loading the user list.";
+                return View(new List<User>());
+            }
+        }
+
+        // GET: User/Create
+        public IActionResult Create()
+        {
+            try
+            {
+                await _logService.LogInfoAsync("Accessing user creation form");
+                return View();
+            }
+            catch (Exception ex)
+            {
+                await _logService.LogErrorAsync(ex, "Error accessing create user form");
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        // POST: User/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Name,Email,Phone,DateOfBirth")] User user)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errors = string.Join("; ", ModelState.Values
+                        .SelectMany(x => x.Errors)
+                        .Select(x => x.ErrorMessage));
+                    await _logService.LogWarningAsync($"Invalid model state in user creation: {errors}");
+                    return View(user);
+                }
+
+                // Validate name for integers
+                if (Regex.IsMatch(user.Name ?? string.Empty, @"\d"))
+                {
+                    var ex = new UserValidationException("Name contains integers", "Name");
+                    await _logService.LogErrorAsync(ex, $"Validation failed: {user.Name} contains integers");
+                    ModelState.AddModelError("Name", "Name cannot contain numbers");
+                    return View(user);
+                }
+
+                user.CreatedAt = DateTime.Now;
+                _context.Add(user);
+                await _context.SaveChangesAsync();
+
+                await _logService.LogInfoAsync($"User created successfully: {user.Name} ({user.Email})");
+                TempData["SuccessMessage"] = "User created successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                await _logService.LogErrorAsync(ex, $"Database error creating user: {user?.Email}");
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists contact your system administrator.");
+                return View(user);
+            }
+            catch (Exception ex)
+            {
+                await _logService.LogErrorAsync(ex, $"Unexpected error creating user: {user?.Email}");
+                ModelState.AddModelError("", "An unexpected error occurred. Please try again.");
+                return View(user);
+            }
+        }
+
+        // GET: User/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                await _logService.LogWarningAsync("Edit attempted with null ID");
+                return NotFound();
+            }
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                await _logService.LogWarningAsync($"User not found for edit: ID {id}");
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        // POST: User/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Email,Phone,DateOfBirth,CreatedAt")] User user)
+        {
+            if (id != user.Id)
+            {
+                await _logService.LogWarningAsync($"Edit attempted with mismatched IDs: {id} vs {user.Id}");
+                return NotFound();
+            }
+
+            try
+            {
+                // Additional check for integers in name
+                if (Regex.IsMatch(user.Name ?? string.Empty, @"\d"))
+                {
+                    await _logService.LogErrorAsync(
+                        new Exception("Name validation failed"),
+                        $"User edit failed: Name '{user.Name}' contains integers",
+                        "System"
+                    );
+                    ModelState.AddModelError("Name", "Full Name cannot contain numbers");
+                    return View(user);
+                }
+
+                if (ModelState.IsValid)
+                {
+                    _context.Update(user);
+                    await _context.SaveChangesAsync();
+                    await _logService.LogInfoAsync($"User updated successfully: {user.Name} (ID: {id})");
+                    return RedirectToAction(nameof(Index));
+                }
+
+                foreach (var modelError in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    await _logService.LogWarningAsync(
+                        $"Validation error during user edit: {modelError.ErrorMessage}",
+                        "UserController",
+                        "Edit"
+                    );
+                }
+                return View(user);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                if (!UserExists(user.Id))
+                {
+                    await _logService.LogErrorAsync(ex, $"User not found during edit: ID {id}");
+                    return NotFound();
+                }
+                else
+                {
+                    await _logService.LogErrorAsync(ex, $"Concurrency error during user edit: ID {id}");
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+                await _logService.LogErrorAsync(ex, $"Error updating user: ID {id}");
+                ModelState.AddModelError("", "Unable to save changes. Please try again.");
+                return View(user);
+            }
+        }
+
+        // GET: User/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                await _logService.LogWarningAsync("Delete attempted with null ID");
+                return NotFound();
+            }
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                await _logService.LogWarningAsync($"User not found for delete: ID {id}");
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        // POST: User/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                await _logService.LogWarningAsync($"User not found during delete confirmation: ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                await _logService.LogInfoAsync($"User deleted successfully: {user.Name} (ID: {id})");
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                await _logService.LogErrorAsync(ex, $"Error deleting user: ID {id}");
+                TempData["ErrorMessage"] = "An error occurred while deleting the user.";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        private bool UserExists(int id)
+        {
+            return _context.Users.Any(e => e.Id == id);
+        }
+    }
+}

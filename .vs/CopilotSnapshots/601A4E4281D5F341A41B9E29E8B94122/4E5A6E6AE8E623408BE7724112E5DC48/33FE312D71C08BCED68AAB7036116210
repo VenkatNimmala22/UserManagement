@@ -1,0 +1,74 @@
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using UserManagementApp.Data;
+using UserManagementApp.Models;
+using UserManagementApp.Services;
+
+namespace UserManagementApp.Controllers
+{
+    public class LoginController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly ILogService _logService;
+
+        public LoginController(ApplicationDbContext context, ILogService logService)
+        {
+            _context = context;
+            _logService = logService;
+        }
+
+        [HttpGet]
+        public IActionResult Index(string? returnUrl = null)
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(string username, string password, string? returnUrl = null)
+        {
+            try
+            {
+                var user = _context.Logins.FirstOrDefault(l => l.Username == username && l.Password == password);
+                if (user == null)
+                {
+                    await _logService.LogWarningAsync($"Failed login attempt for username: {username}");
+                    ModelState.AddModelError("", "Invalid username or password.");
+                    return View();
+                }
+
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim("UserId", user.Id.ToString())
+                };
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                await _logService.LogInfoAsync($"User logged in: {user.Username}");
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+                return RedirectToAction("Index", "User");
+            }
+            catch (Exception ex)
+            {
+                await _logService.LogErrorAsync(ex, "Error during login");
+                ModelState.AddModelError("", "An error occurred during login.");
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await _logService.LogInfoAsync($"User logged out: {User.Identity?.Name}");
+            return RedirectToAction("Index", "Login");
+        }
+    }
+}

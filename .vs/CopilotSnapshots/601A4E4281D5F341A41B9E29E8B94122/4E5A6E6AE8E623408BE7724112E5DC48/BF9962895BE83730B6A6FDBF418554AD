@@ -1,0 +1,119 @@
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using UserManagementApp.Data;
+using UserManagementApp.Models;
+using UserManagementApp.Services;
+
+namespace UserManagementApp.Controllers
+{
+    public class LoginController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly ILogService _logService;
+
+        public LoginController(ApplicationDbContext context, ILogService logService)
+        {
+            _context = context;
+            _logService = logService;
+        }
+
+        [AllowAnonymous]
+        public IActionResult Index(string? returnUrl = null)
+        {
+            // If user is already logged in, redirect to home
+            if (User.Identity?.IsAuthenticated ?? false)
+            {
+                return RedirectToAction("Index", "User");
+            }
+
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(string username, string password, string? returnUrl = null)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                {
+                    await _logService.LogWarningAsync("Login attempt with empty username or password");
+                    ModelState.AddModelError("", "Username and password are required.");
+                    return View();
+                }
+
+                var login = _context.Logins.FirstOrDefault(l => l.Username == username);
+                
+                if (login == null)
+                {
+                    await _logService.LogWarningAsync($"Login attempt with non-existent username: {username}");
+                    ModelState.AddModelError("", "Invalid username or password.");
+                    return View();
+                }
+
+                if (login.Password != password) // In production, use proper password hashing
+                {
+                    await _logService.LogWarningAsync($"Failed login attempt for user: {username}");
+                    ModelState.AddModelError("", "Invalid username or password.");
+                    return View();
+                }
+
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, login.Username),
+                    new Claim("UserId", login.Id.ToString())
+                };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    principal,
+                    new AuthenticationProperties
+                    {
+                        IsPersistent = true,
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
+                    });
+
+                await _logService.LogInfoAsync($"Successful login for user: {username}");
+
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+
+                return RedirectToAction("Index", "User");
+            }
+            catch (Exception ex)
+            {
+                await _logService.LogErrorAsync(ex, $"Error during login attempt for user: {username}");
+                ModelState.AddModelError("", "An error occurred during login. Please try again.");
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                var username = User.Identity?.Name;
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                await _logService.LogInfoAsync($"User logged out successfully: {username}");
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                await _logService.LogErrorAsync(ex, "Error during logout");
+                return RedirectToAction("Index");
+            }
+        }
+    }
+}

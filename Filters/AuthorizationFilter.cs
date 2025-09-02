@@ -1,0 +1,53 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using UserManagementApp.Services;
+using System.Reflection;
+
+namespace UserManagementApp.Filters
+{
+    public class AuthorizationFilter : IAuthorizationFilter
+    {
+        private readonly ILogService _logService;
+
+        public AuthorizationFilter(ILogService logService)
+        {
+            _logService = logService;
+        }
+
+        public void OnAuthorization(AuthorizationFilterContext context)
+        {
+            try
+            {
+                // Skip authorization if [AllowAnonymous] is present
+                var endpoint = context.ActionDescriptor as Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor;
+                if (endpoint != null)
+                {
+                    var hasAllowAnonymous = endpoint.MethodInfo.GetCustomAttribute<AllowAnonymousAttribute>() != null
+                        || endpoint.ControllerTypeInfo.GetCustomAttribute<AllowAnonymousAttribute>() != null;
+                    if (hasAllowAnonymous)
+                        return;
+                }
+
+                if (!context.HttpContext.User.Identity?.IsAuthenticated ?? true)
+                {
+                    // Log unauthorized access attempt
+                    var request = context.HttpContext.Request;
+                    _logService.LogWarningAsync(
+                        $"Unauthorized access attempt to {request.Path}",
+                        "AuthorizationFilter",
+                        "OnAuthorization").Wait();
+
+                    // Store the return URL
+                    var returnUrl = context.HttpContext.Request.Path.ToString();
+                    context.Result = new RedirectToActionResult("Index", "Login", new { returnUrl });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logService.LogErrorAsync(ex, "Error in authorization filter").Wait();
+                throw;
+            }
+        }
+    }
+}

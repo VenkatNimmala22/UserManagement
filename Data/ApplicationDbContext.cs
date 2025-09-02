@@ -11,6 +11,7 @@ namespace UserManagementApp.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Log> Logs { get; set; }
+        public DbSet<Login> Logins { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,7 +23,7 @@ namespace UserManagementApp.Data
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(150);
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.Phone).HasMaxLength(15);
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE() ");
             });
 
             // Log entity configuration
@@ -38,9 +39,18 @@ namespace UserManagementApp.Data
                 entity.Property(e => e.IpAddress).HasMaxLength(45);
                 entity.Property(e => e.RequestPath).HasMaxLength(500);
                 entity.Property(e => e.HttpMethod).HasMaxLength(10);
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE() ");
                 entity.HasIndex(e => e.CreatedAt);
                 entity.HasIndex(e => e.LogLevel);
+            });
+
+            // Login entity configuration
+            modelBuilder.Entity<Login>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Username).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Password).IsRequired().HasMaxLength(100);
+                entity.HasIndex(e => e.Username).IsUnique();
             });
 
             base.OnModelCreating(modelBuilder);

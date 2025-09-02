@@ -170,3 +170,11 @@ C:\GitHub\UserManagement\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows
 C:\GitHub\UserManagement\obj\Debug\net8.0\UserManagement.csproj.AssemblyReference.cache
 C:\GitHub\UserManagement\obj\Debug\net8.0\UserMana.582A6DE7.Up2Date
 C:\GitHub\UserManagement\obj\Debug\net8.0\UserManagement.sourcelink.json
+C:\GitHub\UserManagement\bin\Debug\net8.0\EPPlus.dll
+C:\GitHub\UserManagement\bin\Debug\net8.0\EPPlus.Interfaces.dll
+C:\GitHub\UserManagement\bin\Debug\net8.0\Microsoft.Extensions.Configuration.FileExtensions.dll
+C:\GitHub\UserManagement\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Json.dll
+C:\GitHub\UserManagement\bin\Debug\net8.0\Microsoft.IO.RecyclableMemoryStream.dll
+C:\GitHub\UserManagement\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
+C:\GitHub\UserManagement\bin\Debug\net8.0\System.Security.Cryptography.Xml.dll
+C:\GitHub\UserManagement\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
